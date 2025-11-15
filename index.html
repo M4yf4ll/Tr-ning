@@ -1,3 +1,5 @@
+<parameter name="language">html” version_uuid=“b551b679-e7f9-4168-8792-69159a9de84e”>
+
 <!DOCTYPE html>
 
 <html lang="sv">
@@ -286,7 +288,7 @@
     let audioContext = null;
     let hasPlayedBeep = false;
 
-    function playBeep(frequency, duration) {
+    function playBeep(frequency, duration, volume = 0.5) {
         if (!audioContext) {
             audioContext = new (window.AudioContext || window.webkitAudioContext)();
         }
@@ -298,13 +300,23 @@
         gainNode.connect(audioContext.destination);
         
         oscillator.frequency.value = frequency;
-        oscillator.type = 'sine';
+        oscillator.type = 'square'; // Skarpare ton än 'sine'
         
-        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
         gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
         
         oscillator.start(audioContext.currentTime);
         oscillator.stop(audioContext.currentTime + duration);
+    }
+
+    function playStartSound() {
+        // Tre snabba pip för att indikera ny övning
+        if (!audioContext) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        playBeep(1200, 0.1, 0.6);
+        setTimeout(() => playBeep(1200, 0.1, 0.6), 150);
+        setTimeout(() => playBeep(1400, 0.2, 0.6), 300);
     }
 
     function updateDisplay() {
@@ -374,12 +386,12 @@
             
             // Spela ljud när 5 sekunder kvar
             if (timeLeft === 5) {
-                playBeep(800, 0.1);
+                playBeep(1000, 0.15, 0.5);
                 hasPlayedBeep = false;
             } else if (timeLeft <= 4 && timeLeft >= 1) {
-                playBeep(800, 0.1);
+                playBeep(1000, 0.15, 0.5);
             } else if (timeLeft === 0) {
-                playBeep(1200, 0.3); // Högre ton när tiden är slut
+                playBeep(1500, 0.4, 0.6); // Högre och längre ton när tiden är slut
                 hasPlayedBeep = false;
             }
             
@@ -406,12 +418,14 @@
                 currentExercise++;
                 timeLeft = block.workTime;
                 isRest = false;
+                playStartSound(); // Spela ljud när ny övning börjar
             } else {
                 if (currentRound < block.rounds) {
                     currentRound++;
                     currentExercise = 0;
                     timeLeft = block.workTime;
                     isRest = false;
+                    playStartSound(); // Spela ljud när nytt varv börjar
                 } else {
                     if (currentBlock < workout.length - 1) {
                         currentBlock++;
@@ -422,6 +436,7 @@
                         isRunning = false;
                         document.getElementById('startBtn').style.display = 'block';
                         document.getElementById('pauseBtn').style.display = 'none';
+                        playStartSound(); // Spela ljud när nytt block börjar
                     } else {
                         isRunning = false;
                         document.getElementById('completeBox').style.display = 'block';
@@ -446,12 +461,12 @@
                 
                 // Spela ljud när 5 sekunder kvar
                 if (timeLeft === 5) {
-                    playBeep(800, 0.1);
+                    playBeep(1000, 0.15, 0.5);
                     hasPlayedBeep = false;
                 } else if (timeLeft <= 4 && timeLeft >= 1) {
-                    playBeep(800, 0.1);
+                    playBeep(1000, 0.15, 0.5);
                 } else if (timeLeft === 0) {
-                    playBeep(1200, 0.3); // Högre ton när tiden är slut
+                    playBeep(1500, 0.4, 0.6); // Högre och längre ton när tiden är slut
                     hasPlayedBeep = false;
                 }
                 
