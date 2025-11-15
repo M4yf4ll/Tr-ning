@@ -283,6 +283,29 @@
     let isRest = false;
     let timer = null;
     let infoVisible = false;
+    let audioContext = null;
+    let hasPlayedBeep = false;
+
+    function playBeep(frequency, duration) {
+        if (!audioContext) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.value = frequency;
+        oscillator.type = 'sine';
+        
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + duration);
+    }
 
     function updateDisplay() {
         const block = workout[currentBlock];
@@ -348,6 +371,18 @@
         
         timer = setInterval(() => {
             timeLeft--;
+            
+            // Spela ljud när 5 sekunder kvar
+            if (timeLeft === 5) {
+                playBeep(800, 0.1);
+                hasPlayedBeep = false;
+            } else if (timeLeft <= 4 && timeLeft >= 1) {
+                playBeep(800, 0.1);
+            } else if (timeLeft === 0) {
+                playBeep(1200, 0.3); // Högre ton när tiden är slut
+                hasPlayedBeep = false;
+            }
+            
             updateDisplay();
             if (timeLeft <= 0) {
                 nextExercise();
@@ -408,6 +443,18 @@
         if (isRunning) {
             timer = setInterval(() => {
                 timeLeft--;
+                
+                // Spela ljud när 5 sekunder kvar
+                if (timeLeft === 5) {
+                    playBeep(800, 0.1);
+                    hasPlayedBeep = false;
+                } else if (timeLeft <= 4 && timeLeft >= 1) {
+                    playBeep(800, 0.1);
+                } else if (timeLeft === 0) {
+                    playBeep(1200, 0.3); // Högre ton när tiden är slut
+                    hasPlayedBeep = false;
+                }
+                
                 updateDisplay();
                 if (timeLeft <= 0) {
                     nextExercise();
