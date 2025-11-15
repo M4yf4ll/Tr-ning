@@ -295,18 +295,11 @@
         oscillator.frequency.value = frequency;
         oscillator.type = 'sine';
         
-        gainNode.gain.setValueAtTime(0.8, audioContext.currentTime);
+        gainNode.gain.setValueAtTime(1.0, audioContext.currentTime);
         gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
         
         oscillator.start(audioContext.currentTime);
         oscillator.stop(audioContext.currentTime + duration);
-    }
-
-    function playStartSound() {
-        // Tre snabba pip för ny övning
-        playBeep(1200, 0.1);
-        setTimeout(() => playBeep(1200, 0.1), 150);
-        setTimeout(() => playBeep(1400, 0.2), 300);
     }
 
     function updateDisplay() {
@@ -404,14 +397,12 @@
                 currentExercise++;
                 timeLeft = block.workTime;
                 isRest = false;
-                playStartSound(); // Spela ljud när ny övning börjar
             } else {
                 if (currentRound < block.rounds) {
                     currentRound++;
                     currentExercise = 0;
                     timeLeft = block.workTime;
                     isRest = false;
-                    playStartSound(); // Spela ljud när nytt varv börjar
                 } else {
                     if (currentBlock < workout.length - 1) {
                         currentBlock++;
@@ -422,7 +413,6 @@
                         isRunning = false;
                         document.getElementById('startBtn').style.display = 'block';
                         document.getElementById('pauseBtn').style.display = 'none';
-                        playStartSound(); // Spela ljud när nytt block börjar
                     } else {
                         isRunning = false;
                         document.getElementById('completeBox').style.display = 'block';
