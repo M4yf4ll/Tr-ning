@@ -148,16 +148,6 @@
         .btn-next { background: #2563eb; }
         .btn-next:hover { background: #1d4ed8; }
         .btn-next:disabled { background: #d1d5db; cursor: not-allowed; }
-        .sound-status {
-            text-align: center;
-            padding: 8px;
-            margin-bottom: 16px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-        .sound-off { background: #fee2e2; color: #dc2626; }
-        .sound-on { background: #dcfce7; color: #16a34a; }
         .complete-box {
             background: #dcfce7;
             border: 2px solid #16a34a;
@@ -220,10 +210,6 @@
         </div>
         <div class="exercise-info" id="exerciseInfo"></div>
         <div class="exercise-counter" id="exerciseCounter">Övning 1 av 4</div>
-    </div>
-
-    <div id="soundStatus" class="sound-status sound-off" onclick="enableSound()">
-        🔇 Tryck här för att aktivera ljud
     </div>
 
     <div class="buttons">
@@ -298,28 +284,13 @@
     let timer = null;
     let infoVisible = false;
     let audioContext = null;
-    let hasPlayedBeep = false;
-    let soundEnabled = false;
 
-    function enableSound() {
-        if (!audioContext) {
-            audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        }
-        
-        // Spela ett testljud
-        playBeep(1000, 0.1, 0.5);
-        soundEnabled = true;
-        
-        const statusDiv = document.getElementById('soundStatus');
-        statusDiv.className = 'sound-status sound-on';
-        statusDiv.innerHTML = '🔊 Ljud aktiverat!';
-        statusDiv.style.cursor = 'default';
-    }
-
-    function playBeep(frequency, duration, volume = 0.5) {
-        if (!soundEnabled || !audioContext) return;
-        
+    function playBeep(frequency, duration) {
         try {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            
             const oscillator = audioContext.createOscillator();
             const gainNode = audioContext.createGain();
             
@@ -329,23 +300,21 @@
             oscillator.frequency.value = frequency;
             oscillator.type = 'square';
             
-            gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
+            gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
             gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
             
             oscillator.start(audioContext.currentTime);
             oscillator.stop(audioContext.currentTime + duration);
         } catch (e) {
-            console.log('Ljud kunde inte spelas:', e);
+            console.log('Audio error:', e);
         }
     }
 
     function playStartSound() {
-        if (!soundEnabled) return;
-        
         // Tre snabba pip för att indikera ny övning
-        playBeep(1200, 0.1, 0.6);
-        setTimeout(() => playBeep(1200, 0.1, 0.6), 150);
-        setTimeout(() => playBeep(1400, 0.2, 0.6), 300);
+        playBeep(1200, 0.1);
+        setTimeout(() => playBeep(1200, 0.1), 150);
+        setTimeout(() => playBeep(1400, 0.2), 300);
     }
 
     function updateDisplay() {
@@ -414,14 +383,10 @@
             timeLeft--;
             
             // Spela ljud när 5 sekunder kvar
-            if (timeLeft === 5) {
-                playBeep(1000, 0.15, 0.5);
-                hasPlayedBeep = false;
-            } else if (timeLeft <= 4 && timeLeft >= 1) {
-                playBeep(1000, 0.15, 0.5);
+            if (timeLeft === 5 || timeLeft === 4 || timeLeft === 3 || timeLeft === 2 || timeLeft === 1) {
+                playBeep(1000, 0.15);
             } else if (timeLeft === 0) {
-                playBeep(1500, 0.4, 0.6); // Högre och längre ton när tiden är slut
-                hasPlayedBeep = false;
+                playBeep(1500, 0.4);
             }
             
             updateDisplay();
@@ -489,14 +454,10 @@
                 timeLeft--;
                 
                 // Spela ljud när 5 sekunder kvar
-                if (timeLeft === 5) {
-                    playBeep(1000, 0.15, 0.5);
-                    hasPlayedBeep = false;
-                } else if (timeLeft <= 4 && timeLeft >= 1) {
-                    playBeep(1000, 0.15, 0.5);
+                if (timeLeft === 5 || timeLeft === 4 || timeLeft === 3 || timeLeft === 2 || timeLeft === 1) {
+                    playBeep(1000, 0.15);
                 } else if (timeLeft === 0) {
-                    playBeep(1500, 0.4, 0.6); // Högre och längre ton när tiden är slut
-                    hasPlayedBeep = false;
+                    playBeep(1500, 0.4);
                 }
                 
                 updateDisplay();
