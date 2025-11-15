@@ -1,2 +1,2 @@
-# Tr-ning
+# Training
 Brandmans intervall
