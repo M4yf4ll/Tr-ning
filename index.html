@@ -1,3 +1,5 @@
+<parameter name="language">html”  version_uuid=“90fba3b4-2c57-4da3-b8fd-af2356decf23”>
+
 <!DOCTYPE html>
 
 <html lang="sv">
@@ -5,360 +7,435 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Brandmans Intervallträning</title>
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #ff6b35 0%, #dc2626 50%, #b91c1c 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 24px;
+        }
+        h1 {
+            font-size: 28px;
+            color: #dc2626;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .progress-box {
+            background: #f3f4f6;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #d1d5db;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #dc2626;
+            transition: width 0.3s;
+        }
+        .timer {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .timer-number {
+            font-size: 80px;
+            font-weight: bold;
+            line-height: 1;
+            margin-bottom: 12px;
+        }
+        .timer-label {
+            font-size: 24px;
+            font-weight: 600;
+        }
+        .work { color: #dc2626; }
+        .rest { color: #2563eb; }
+        .exercise-box {
+            background: linear-gradient(135deg, #fef2f2 0%, #fff7ed 100%);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+        .exercise-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 12px;
+        }
+        .exercise-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1f2937;
+        }
+        .info-btn {
+            background: none;
+            border: none;
+            color: #dc2626;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0 8px;
+        }
+        .exercise-info {
+            background: white;
+            border-left: 4px solid #dc2626;
+            padding: 16px;
+            margin-bottom: 12px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            font-size: 14px;
+            line-height: 1.6;
+            display: none;
+        }
+        .exercise-info.show { display: block; }
+        .exercise-counter {
+            font-size: 14px;
+            color: #666;
+        }
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .button-row {
+            display: flex;
+            gap: 12px;
+        }
+        button {
+            flex: 1;
+            padding: 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-full { width: 100%; }
+        .btn-start { background: #16a34a; }
+        .btn-start:hover { background: #15803d; }
+        .btn-pause { background: #eab308; }
+        .btn-pause:hover { background: #ca8a04; }
+        .btn-reset { background: #6b7280; }
+        .btn-reset:hover { background: #4b5563; }
+        .btn-next { background: #2563eb; }
+        .btn-next:hover { background: #1d4ed8; }
+        .btn-next:disabled { background: #d1d5db; cursor: not-allowed; }
+        .complete-box {
+            background: #dcfce7;
+            border: 2px solid #16a34a;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .complete-emoji { font-size: 48px; margin-bottom: 12px; }
+        .complete-title { font-size: 24px; font-weight: bold; color: #16a34a; margin-bottom: 8px; }
+        .complete-text { color: #4b5563; }
+        .exercise-list {
+            margin-top: 24px;
+        }
+        .exercise-list h3 {
+            font-size: 16px;
+            font-weight: bold;
+            color: #4b5563;
+            margin-bottom: 12px;
+        }
+        .exercise-item {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            background: #f9fafb;
+        }
+        .exercise-item.active {
+            background: #fee2e2;
+            border: 2px solid #dc2626;
+        }
+        .exercise-item-name { font-weight: 600; margin-bottom: 4px; }
+        .exercise-item-time { font-size: 14px; color: #666; }
+    </style>
 </head>
 <body>
-    <div id="root"></div>
-    <script type="text/babel">
-        const { useState, useEffect } = React;
+    <div class="container">
+        <h1>🔥 Brandmans Intervallträning</h1>
+        <div class="subtitle">30 minuter • Kroppsvikt • Betonggolv OK</div>
 
 ```
-    // Simple icon components
-    const Play = ({ size = 24 }) => (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <polygon points="5 3 19 12 5 21 5 3"></polygon>
-      </svg>
-    );
-
-    const Pause = ({ size = 24 }) => (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <rect x="6" y="4" width="4" height="16"></rect>
-        <rect x="14" y="4" width="4" height="16"></rect>
-      </svg>
-    );
-
-    const RotateCcw = ({ size = 24 }) => (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <polyline points="1 4 1 10 7 10"></polyline>
-        <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
-      </svg>
-    );
-
-    const ChevronRight = ({ size = 24 }) => (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <polyline points="9 18 15 12 9 6"></polyline>
-      </svg>
-    );
-
-    const Info = ({ size = 24 }) => (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <circle cx="12" cy="12" r="10"></circle>
-        <line x1="12" y1="16" x2="12" y2="12"></line>
-        <line x1="12" y1="8" x2="12.01" y2="8"></line>
-      </svg>
-    );
-
-    const FirefighterWorkout = () => {
-      const [currentBlock, setCurrentBlock] = useState(0);
-      const [currentExercise, setCurrentExercise] = useState(0);
-      const [currentRound, setCurrentRound] = useState(1);
-      const [timeLeft, setTimeLeft] = useState(0);
-      const [isRunning, setIsRunning] = useState(false);
-      const [isRest, setIsRest] = useState(false);
-      const [showInfo, setShowInfo] = useState(null);
-
-      const workout = [
-        {
-          name: "Block 1: Kondition",
-          rounds: 4,
-          workTime: 40,
-          restTime: 20,
-          exercises: [
-            {
-              name: "Burpees",
-              description: "1. Stå upprätt\n2. Sätt händerna i golvet\n3. Hoppa benen bakåt till plankposition\n4. Hoppa benen fram igen\n5. Stå upp och hoppa\n\nTips: Gör push-up i plankan om du orkar!"
-            },
-            {
-              name: "Mountain Climbers",
-              description: "1. Börja i plankposition (raka armar)\n2. Dra höger knä mot bröstet\n3. Byt snabbt - vänster knä fram\n4. Fortsätt växla i snabb takt\n\nTips: Håll höften låg, rör benen snabbt!"
-            },
-            {
-              name: "Jump Squats",
-              description: "1. Stå med fötterna brett isär\n2. Gå ner i djup knäböj\n3. Explodera upp i ett hopp\n4. Landa mjukt och gå direkt ner igen\n\nTips: Landa på mjuka knän för att skona leden!"
-            },
-            {
-              name: "High Knees",
-              description: "1. Spring på plats\n2. Lyft knäna så högt du kan\n3. Håll hög tempo\n4. Pumpa med armarna\n\nTips: Knäna ska upp mot brösthöjd!"
-            }
-          ]
-        },
-        {
-          name: "Block 2: Styrka",
-          rounds: 3,
-          workTime: 45,
-          restTime: 15,
-          exercises: [
-            {
-              name: "Push-ups",
-              description: "1. Plankposition med händerna axelbrett\n2. Sänk kroppen genom att böja armbågarna\n3. Tryck upp till utgångsläget\n4. Håll kroppen rak hela tiden\n\nTips: Gör på knäna om det är för tungt!"
-            },
-            {
-              name: "Walking Lunges",
-              description: "1. Stå upprätt\n2. Ta ett stort steg framåt med höger ben\n3. Sänk vänster knä mot golvet\n4. Res dig och ta nästa steg med vänster\n5. Fortsätt gå framåt\n\nTips: Håll överkroppen upprätt, knäet bakom tårna!"
-            },
-            {
-              name: "Plank Hold",
-              description: "1. Ligg på mage\n2. Stöd på underarmarna och tårna\n3. Lyft kroppen - bli rak som en planka\n4. Håll position\n\nTips: Spänn mage och rumpa, andas lugnt!"
-            },
-            {
-              name: "Squat Hold",
-              description: "1. Gå ner i djup knäböj\n2. Håll positionen\n3. Armarna rakt fram för balans\n4. Tyngden på hälarna\n\nTips: Se framåt, håll ryggen rak!"
-            },
-            {
-              name: "Triceps Dips",
-              description: "1. Sitt på golvet, händerna bakom dig\n2. Böj knäna, fötterna i golvet\n3. Lyft höften från golvet\n4. Böj och sträck armbågarna\n\nTips: Armbågarna bakåt, inte ut åt sidorna!"
-            }
-          ]
-        },
-        {
-          name: "Block 3: Funktionellt",
-          rounds: 4,
-          workTime: 35,
-          restTime: 25,
-          exercises: [
-            {
-              name: "Burpee Hopp",
-              description: "1. Stå upprätt\n2. Sätt händerna i golvet\n3. Hoppa benen bakåt\n4. Hoppa benen fram\n5. Hoppa på plats 3 gånger\n\nTips: Explosiva hopp, landa mjukt!"
-            },
-            {
-              name: "Bear Crawl",
-              description: "1. På händer och fötter, knän ovanför golvet\n2. Crawla framåt 3-4 meter\n3. Crawla bakåt till start\n4. Repetera\n\nTips: Håll ryggen rak, knän lågt!"
-            },
-            {
-              name: "Plank Shoulder Taps",
-              description: "1. I plankposition\n2. Lyft höger hand och nudda vänster axel\n3. Tillbaka, byt hand\n4. Fortsätt växla\n\nTips: Håll höften stilla, vrid inte!"
-            },
-            {
-              name: "Skater Jumps",
-              description: "1. Hoppa åt sidan på höger ben\n2. Vänster ben sveper bakom\n3. Hoppa tillbaka på vänster ben\n4. Fortsätt växla sidor\n\nTips: Stora hopp, balansera på ett ben!"
-            },
-            {
-              name: "Superman Holds",
-              description: "1. Ligg på mage\n2. Sträck ut armarna framåt\n3. Lyft armar och ben samtidigt\n4. Håll position\n\nTips: Titta ner i golvet, spänn hela kroppen!"
-            }
-          ]
-        }
-      ];
-
-      const currentWorkout = workout[currentBlock];
-      const currentExerciseData = currentWorkout.exercises[currentExercise];
-      const totalExercises = currentWorkout.exercises.length;
-
-      useEffect(() => {
-        let interval;
-        if (isRunning && timeLeft > 0) {
-          interval = setInterval(() => {
-            setTimeLeft(time => time - 1);
-          }, 1000);
-        } else if (timeLeft === 0 && isRunning) {
-          handleNextExercise();
-        }
-        return () => clearInterval(interval);
-      }, [isRunning, timeLeft]);
-
-      const handleStart = () => {
-        if (timeLeft === 0) {
-          setTimeLeft(isRest ? currentWorkout.restTime : currentWorkout.workTime);
-        }
-        setIsRunning(true);
-      };
-
-      const handlePause = () => {
-        setIsRunning(false);
-      };
-
-      const handleReset = () => {
-        setIsRunning(false);
-        setCurrentBlock(0);
-        setCurrentExercise(0);
-        setCurrentRound(1);
-        setTimeLeft(0);
-        setIsRest(false);
-      };
-
-      const handleNextExercise = () => {
-        if (isRest) {
-          if (currentExercise < totalExercises - 1) {
-            setCurrentExercise(currentExercise + 1);
-            setTimeLeft(currentWorkout.workTime);
-            setIsRest(false);
-          } else {
-            if (currentRound < currentWorkout.rounds) {
-              setCurrentRound(currentRound + 1);
-              setCurrentExercise(0);
-              setTimeLeft(currentWorkout.workTime);
-              setIsRest(false);
-            } else {
-              if (currentBlock < workout.length - 1) {
-                setCurrentBlock(currentBlock + 1);
-                setCurrentExercise(0);
-                setCurrentRound(1);
-                setTimeLeft(workout[currentBlock + 1].workTime);
-                setIsRest(false);
-                setIsRunning(false);
-              } else {
-                setIsRunning(false);
-                setTimeLeft(0);
-              }
-            }
-          }
-        } else {
-          setTimeLeft(currentWorkout.restTime);
-          setIsRest(true);
-        }
-      };
-
-      const isWorkoutComplete = currentBlock === workout.length - 1 && 
-                               currentRound === currentWorkout.rounds && 
-                               currentExercise === totalExercises - 1 && 
-                               timeLeft === 0 && !isRunning;
-
-      return (
-        <div className="min-h-screen bg-gradient-to-br from-orange-600 via-red-600 to-red-800 p-4">
-          <div className="max-w-2xl mx-auto">
-            <div className="bg-white rounded-lg shadow-2xl p-6 mb-4">
-              <h1 className="text-3xl font-bold text-center text-red-700 mb-2">
-                🔥 Brandmans Intervallträning
-              </h1>
-              <p className="text-center text-gray-600 mb-4">
-                30 minuter • Kroppsvikt • Betonggolv OK
-              </p>
-
-              <div className="bg-gray-100 rounded-lg p-4 mb-6">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="font-semibold text-gray-700">
-                    {currentWorkout.name}
-                  </span>
-                  <span className="text-sm text-gray-600">
-                    Varv {currentRound}/{currentWorkout.rounds}
-                  </span>
-                </div>
-                <div className="w-full bg-gray-300 rounded-full h-2">
-                  <div 
-                    className="bg-red-600 h-2 rounded-full transition-all"
-                    style={{
-                      width: `${((currentExercise + 1) / totalExercises) * 100}%`
-                    }}
-                  />
-                </div>
-              </div>
-
-              <div className="text-center mb-6">
-                <div className={`text-8xl font-bold mb-2 ${isRest ? 'text-blue-600' : 'text-red-600'}`}>
-                  {timeLeft}
-                </div>
-                <div className={`text-2xl font-semibold ${isRest ? 'text-blue-600' : 'text-red-600'}`}>
-                  {isRest ? '💧 VILA' : '💪 KÖR!'}
-                </div>
-              </div>
-
-              <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-lg p-6 mb-6">
-                <div className="flex justify-between items-start mb-3">
-                  <h2 className="text-2xl font-bold text-gray-800">
-                    {isRest ? 'Vila - Nästa:' : currentExerciseData.name}
-                  </h2>
-                  <button
-                    onClick={() => setShowInfo(showInfo === currentExercise ? null : currentExercise)}
-                    className="text-red-600 hover:text-red-700"
-                  >
-                    <Info size={24} />
-                  </button>
-                </div>
-                
-                {showInfo === currentExercise && (
-                  <div className="bg-white rounded p-4 mb-3 border-l-4 border-red-500">
-                    <pre className="whitespace-pre-wrap font-sans text-sm text-gray-700">
-                      {currentExerciseData.description}
-                    </pre>
-                  </div>
-                )}
-
-                <div className="text-sm text-gray-600">
-                  Övning {currentExercise + 1} av {totalExercises}
-                </div>
-              </div>
-
-              <div className="space-y-3 mb-6">
-                {!isRunning ? (
-                  <button
-                    onClick={handleStart}
-                    className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-6 rounded-lg flex items-center justify-center gap-2 text-lg"
-                  >
-                    <Play size={24} />
-                    {timeLeft === 0 ? 'Starta' : 'Fortsätt'}
-                  </button>
-                ) : (
-                  <button
-                    onClick={handlePause}
-                    className="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-4 px-6 rounded-lg flex items-center justify-center gap-2 text-lg"
-                  >
-                    <Pause size={24} />
-                    Pausa
-                  </button>
-                )}
-                
-                <div className="flex gap-3">
-                  <button
-                    onClick={handleReset}
-                    className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-bold py-4 px-4 rounded-lg flex items-center justify-center gap-2 text-lg"
-                  >
-                    <RotateCcw size={20} />
-                    Återställ
-                  </button>
-                  
-                  <button
-                    onClick={handleNextExercise}
-                    disabled={!isRunning && timeLeft === 0}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-4 rounded-lg flex items-center justify-center gap-2 text-lg disabled:bg-gray-400"
-                  >
-                    Nästa
-                    <ChevronRight size={20} />
-                  </button>
-                </div>
-              </div>
-
-              {isWorkoutComplete && (
-                <div className="bg-green-100 border-2 border-green-500 rounded-lg p-6 text-center">
-                  <div className="text-4xl mb-2">🎉</div>
-                  <h3 className="text-2xl font-bold text-green-700 mb-2">
-                    Grattis! Passet klart!
-                  </h3>
-                  <p className="text-gray-700">
-                    Bra jobbat brandman! 💪🔥
-                  </p>
-                </div>
-              )}
-
-              <div className="mt-6">
-                <h3 className="font-bold text-gray-700 mb-3">Alla övningar i detta block:</h3>
-                <div className="space-y-2">
-                  {currentWorkout.exercises.map((ex, idx) => (
-                    <div 
-                      key={idx}
-                      className={`p-3 rounded ${
-                        idx === currentExercise 
-                          ? 'bg-red-100 border-2 border-red-500' 
-                          : 'bg-gray-50'
-                      }`}
-                    >
-                      <div className="font-semibold">{ex.name}</div>
-                      <div className="text-sm text-gray-600">
-                        {currentWorkout.workTime}s arbete / {currentWorkout.restTime}s vila
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
+    <div class="progress-box">
+        <div class="progress-header">
+            <span id="blockName">Block 1: Kondition</span>
+            <span id="roundInfo">Varv 1/4</span>
         </div>
-      );
-    };
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar"></div>
+        </div>
+    </div>
 
-    ReactDOM.render(<FirefighterWorkout />, document.getElementById('root'));
+    <div class="timer">
+        <div class="timer-number" id="timerNumber">0</div>
+        <div class="timer-label" id="timerLabel">💪 KÖR!</div>
+    </div>
+
+    <div class="exercise-box">
+        <div class="exercise-header">
+            <h2 class="exercise-name" id="exerciseName">Burpees</h2>
+            <button class="info-btn" id="infoBtn" onclick="toggleInfo()">ℹ️</button>
+        </div>
+        <div class="exercise-info" id="exerciseInfo"></div>
+        <div class="exercise-counter" id="exerciseCounter">Övning 1 av 4</div>
+    </div>
+
+    <div class="buttons">
+        <button class="btn-start btn-full" id="startBtn" onclick="startTimer()">▶️ Starta</button>
+        <button class="btn-pause btn-full" id="pauseBtn" onclick="pauseTimer()" style="display:none;">⏸️ Pausa</button>
+        <div class="button-row">
+            <button class="btn-reset" onclick="resetWorkout()">🔄 Återställ</button>
+            <button class="btn-next" id="nextBtn" onclick="nextExercise()">Nästa ➡️</button>
+        </div>
+    </div>
+
+    <div id="completeBox" style="display:none;" class="complete-box">
+        <div class="complete-emoji">🎉</div>
+        <div class="complete-title">Grattis! Passet klart!</div>
+        <div class="complete-text">Bra jobbat brandman! 💪🔥</div>
+    </div>
+
+    <div class="exercise-list">
+        <h3>Alla övningar i detta block:</h3>
+        <div id="exerciseList"></div>
+    </div>
+</div>
+
+<script>
+    const workout = [
+        {
+            name: "Block 1: Kondition",
+            rounds: 4,
+            workTime: 40,
+            restTime: 20,
+            exercises: [
+                { name: "Burpees", description: "1. Stå upprätt\n2. Sätt händerna i golvet\n3. Hoppa benen bakåt till plankposition\n4. Hoppa benen fram igen\n5. Stå upp och hoppa\n\nTips: Gör push-up i plankan om du orkar!" },
+                { name: "Mountain Climbers", description: "1. Börja i plankposition (raka armar)\n2. Dra höger knä mot bröstet\n3. Byt snabbt - vänster knä fram\n4. Fortsätt växla i snabb takt\n\nTips: Håll höften låg, rör benen snabbt!" },
+                { name: "Jump Squats", description: "1. Stå med fötterna brett isär\n2. Gå ner i djup knäböj\n3. Explodera upp i ett hopp\n4. Landa mjukt och gå direkt ner igen\n\nTips: Landa på mjuka knän för att skona leden!" },
+                { name: "High Knees", description: "1. Spring på plats\n2. Lyft knäna så högt du kan\n3. Håll hög tempo\n4. Pumpa med armarna\n\nTips: Knäna ska upp mot brösthöjd!" }
+            ]
+        },
+        {
+            name: "Block 2: Styrka",
+            rounds: 3,
+            workTime: 45,
+            restTime: 15,
+            exercises: [
+                { name: "Push-ups", description: "1. Plankposition med händerna axelbrett\n2. Sänk kroppen genom att böja armbågarna\n3. Tryck upp till utgångsläget\n4. Håll kroppen rak hela tiden\n\nTips: Gör på knäna om det är för tungt!" },
+                { name: "Walking Lunges", description: "1. Stå upprätt\n2. Ta ett stort steg framåt med höger ben\n3. Sänk vänster knä mot golvet\n4. Res dig och ta nästa steg med vänster\n5. Fortsätt gå framåt\n\nTips: Håll överkroppen upprätt, knäet bakom tårna!" },
+                { name: "Plank Hold", description: "1. Ligg på mage\n2. Stöd på underarmarna och tårna\n3. Lyft kroppen - bli rak som en planka\n4. Håll position\n\nTips: Spänn mage och rumpa, andas lugnt!" },
+                { name: "Squat Hold", description: "1. Gå ner i djup knäböj\n2. Håll positionen\n3. Armarna rakt fram för balans\n4. Tyngden på hälarna\n\nTips: Se framåt, håll ryggen rak!" },
+                { name: "Triceps Dips", description: "1. Sitt på golvet, händerna bakom dig\n2. Böj knäna, fötterna i golvet\n3. Lyft höften från golvet\n4. Böj och sträck armbågarna\n\nTips: Armbågarna bakåt, inte ut åt sidorna!" }
+            ]
+        },
+        {
+            name: "Block 3: Funktionellt",
+            rounds: 4,
+            workTime: 35,
+            restTime: 25,
+            exercises: [
+                { name: "Burpee Hopp", description: "1. Stå upprätt\n2. Sätt händerna i golvet\n3. Hoppa benen bakåt\n4. Hoppa benen fram\n5. Hoppa på plats 3 gånger\n\nTips: Explosiva hopp, landa mjukt!" },
+                { name: "Bear Crawl", description: "1. På händer och fötter, knän ovanför golvet\n2. Crawla framåt 3-4 meter\n3. Crawla bakåt till start\n4. Repetera\n\nTips: Håll ryggen rak, knän lågt!" },
+                { name: "Plank Shoulder Taps", description: "1. I plankposition\n2. Lyft höger hand och nudda vänster axel\n3. Tillbaka, byt hand\n4. Fortsätt växla\n\nTips: Håll höften stilla, vrid inte!" },
+                { name: "Skater Jumps", description: "1. Hoppa åt sidan på höger ben\n2. Vänster ben sveper bakom\n3. Hoppa tillbaka på vänster ben\n4. Fortsätt växla sidor\n\nTips: Stora hopp, balansera på ett ben!" },
+                { name: "Superman Holds", description: "1. Ligg på mage\n2. Sträck ut armarna framåt\n3. Lyft armar och ben samtidigt\n4. Håll position\n\nTips: Titta ner i golvet, spänn hela kroppen!" }
+            ]
+        }
+    ];
+
+    let currentBlock = 0;
+    let currentExercise = 0;
+    let currentRound = 1;
+    let timeLeft = 0;
+    let isRunning = false;
+    let isRest = false;
+    let timer = null;
+    let infoVisible = false;
+
+    function updateDisplay() {
+        const block = workout[currentBlock];
+        const exercise = block.exercises[currentExercise];
+        
+        document.getElementById('blockName').textContent = block.name;
+        document.getElementById('roundInfo').textContent = `Varv ${currentRound}/${block.rounds}`;
+        document.getElementById('exerciseName').textContent = isRest ? 'Vila - Nästa:' : exercise.name;
+        document.getElementById('exerciseInfo').textContent = exercise.description;
+        document.getElementById('exerciseCounter').textContent = `Övning ${currentExercise + 1} av ${block.exercises.length}`;
+        document.getElementById('timerNumber').textContent = timeLeft;
+        
+        const timerNum = document.getElementById('timerNumber');
+        const timerLabel = document.getElementById('timerLabel');
+        
+        if (isRest) {
+            timerNum.className = 'timer-number rest';
+            timerLabel.className = 'timer-label rest';
+            timerLabel.textContent = '💧 VILA';
+        } else {
+            timerNum.className = 'timer-number work';
+            timerLabel.className = 'timer-label work';
+            timerLabel.textContent = '💪 KÖR!';
+        }
+        
+        const progress = ((currentExercise + 1) / block.exercises.length) * 100;
+        document.getElementById('progressBar').style.width = progress + '%';
+        
+        updateExerciseList();
+    }
+
+    function updateExerciseList() {
+        const block = workout[currentBlock];
+        const list = document.getElementById('exerciseList');
+        list.innerHTML = '';
+        
+        block.exercises.forEach((ex, idx) => {
+            const item = document.createElement('div');
+            item.className = 'exercise-item' + (idx === currentExercise ? ' active' : '');
+            item.innerHTML = `
+                <div class="exercise-item-name">${ex.name}</div>
+                <div class="exercise-item-time">${block.workTime}s arbete / ${block.restTime}s vila</div>
+            `;
+            list.appendChild(item);
+        });
+    }
+
+    function toggleInfo() {
+        infoVisible = !infoVisible;
+        const info = document.getElementById('exerciseInfo');
+        info.className = 'exercise-info' + (infoVisible ? ' show' : '');
+    }
+
+    function startTimer() {
+        const block = workout[currentBlock];
+        if (timeLeft === 0) {
+            timeLeft = isRest ? block.restTime : block.workTime;
+        }
+        isRunning = true;
+        document.getElementById('startBtn').style.display = 'none';
+        document.getElementById('pauseBtn').style.display = 'block';
+        document.getElementById('nextBtn').disabled = false;
+        
+        timer = setInterval(() => {
+            timeLeft--;
+            updateDisplay();
+            if (timeLeft <= 0) {
+                nextExercise();
+            }
+        }, 1000);
+    }
+
+    function pauseTimer() {
+        isRunning = false;
+        clearInterval(timer);
+        document.getElementById('startBtn').style.display = 'block';
+        document.getElementById('pauseBtn').style.display = 'none';
+    }
+
+    function nextExercise() {
+        clearInterval(timer);
+        const block = workout[currentBlock];
+        
+        if (isRest) {
+            if (currentExercise < block.exercises.length - 1) {
+                currentExercise++;
+                timeLeft = block.workTime;
+                isRest = false;
+            } else {
+                if (currentRound < block.rounds) {
+                    currentRound++;
+                    currentExercise = 0;
+                    timeLeft = block.workTime;
+                    isRest = false;
+                } else {
+                    if (currentBlock < workout.length - 1) {
+                        currentBlock++;
+                        currentExercise = 0;
+                        currentRound = 1;
+                        timeLeft = workout[currentBlock].workTime;
+                        isRest = false;
+                        isRunning = false;
+                        document.getElementById('startBtn').style.display = 'block';
+                        document.getElementById('pauseBtn').style.display = 'none';
+                    } else {
+                        isRunning = false;
+                        document.getElementById('completeBox').style.display = 'block';
+                        document.getElementById('startBtn').style.display = 'block';
+                        document.getElementById('pauseBtn').style.display = 'none';
+                        updateDisplay();
+                        return;
+                    }
+                }
+            }
+        } else {
+            timeLeft = block.restTime;
+            isRest = true;
+        }
+        
+        infoVisible = false;
+        updateDisplay();
+        
+        if (isRunning) {
+            timer = setInterval(() => {
+                timeLeft--;
+                updateDisplay();
+                if (timeLeft <= 0) {
+                    nextExercise();
+                }
+            }, 1000);
+        }
+    }
+
+    function resetWorkout() {
+        clearInterval(timer);
+        currentBlock = 0;
+        currentExercise = 0;
+        currentRound = 1;
+        timeLeft = 0;
+        isRunning = false;
+        isRest = false;
+        infoVisible = false;
+        document.getElementById('completeBox').style.display = 'none';
+        document.getElementById('startBtn').style.display = 'block';
+        document.getElementById('pauseBtn').style.display = 'none';
+        document.getElementById('nextBtn').disabled = true;
+        updateDisplay();
+    }
+
+    updateDisplay();
+    document.getElementById('nextBtn').disabled = true;
 </script>
 ```
 
