@@ -297,10 +297,26 @@
     let isRest = false;
     let timer = null;
     let infoVisible = false;
+    let audioContext = null;
+    let audioInitialized = false;
+
+    function initAudio() {
+        if (!audioContext) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            audioInitialized = true;
+        }
+        // Resume context om den är suspended
+        if (audioContext.state === 'suspended') {
+            audioContext.resume();
+        }
+    }
 
     function playBeep(frequency, duration) {
+        if (!audioContext || !audioInitialized) {
+            initAudio();
+        }
+        
         try {
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
             const oscillator = audioContext.createOscillator();
             const gainNode = audioContext.createGain();
             
@@ -315,11 +331,6 @@
             
             oscillator.start(audioContext.currentTime);
             oscillator.stop(audioContext.currentTime + duration);
-            
-            // Stäng AudioContext efter ljud för att undvika problem
-            setTimeout(() => {
-                audioContext.close();
-            }, (duration * 1000) + 100);
         } catch (e) {
             console.log('Audio error:', e);
         }
@@ -378,6 +389,9 @@
     }
 
     function startTimer() {
+        // Initiera ljud när användaren trycker start
+        initAudio();
+        
         const block = workout[currentBlock];
         if (timeLeft === 0) {
             timeLeft = isRest ? block.restTime : block.workTime;
