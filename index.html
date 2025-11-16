@@ -1,3 +1,5 @@
+<parameter name="language">html” version_uuid=“a98285cb-a097-4747-ad7a-2e81bb8a2e69”>
+
 <!DOCTYPE html>
 
 <html lang="sv">
@@ -236,6 +238,20 @@
 <script>
     const workout = [
         {
+            name: "Uppvärmning",
+            rounds: 1,
+            workTime: 60,
+            restTime: 10,
+            exercises: [
+                { name: "Jumping Jacks", description: "1. Stå med fötterna ihop, armar längs sidan\n2. Hoppa isär fötterna samtidigt som armarna går upp över huvudet\n3. Hoppa tillbaka till startposition\n4. Fortsätt i jämn takt\n\nTips: Mjuka landningar, håll tempo!" },
+                { name: "Armcirklar", description: "1. Sträck ut armarna åt sidorna\n2. Gör stora cirklar framåt i 30 sekunder\n3. Byt riktning och cirkulera bakåt i 30 sekunder\n4. Håll armarna raka\n\nTips: Stora, kontrollerade rörelser!" },
+                { name: "Höftcirklar", description: "1. Händerna på höfterna\n2. Rotera höften i stora cirklar\n3. 30 sekunder åt ena hållet\n4. 30 sekunder åt andra hållet\n\nTips: Stora rörelser, värm upp höftleden!" },
+                { name: "Leg Swings", description: "1. Stå på ett ben, håll i något för balans\n2. Svinga fria benet framåt och bakåt\n3. 30 sekunder per ben\n4. Sedan svinga benet sida till sida\n\nTips: Kontrollerade svängningar, inte för snabbt!" },
+                { name: "Squats (lätta)", description: "1. Fötter axelbrett isär\n2. Gå ner i knäböj, inte för djupt\n3. Res dig upp\n4. Upprepa i lugnt tempo\n\nTips: Värm upp benen, inte maxansträngning!" },
+                { name: "High Knees (lätta)", description: "1. Spring på plats\n2. Lyft knäna mot bröstet\n3. Öka pulsen gradvis\n4. Mjuka landningar\n\nTips: Börja lugnt, öka tempo mot slutet!" }
+            ]
+        },
+        {
             name: "Block 1: Kondition",
             rounds: 4,
             workTime: 40,
@@ -285,21 +301,30 @@
     let infoVisible = false;
 
     function playBeep(frequency, duration) {
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        
-        oscillator.frequency.value = frequency;
-        oscillator.type = 'sine';
-        
-        gainNode.gain.setValueAtTime(1.0, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
-        
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + duration);
+        try {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = frequency;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(1.0, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration);
+            
+            // Stäng AudioContext efter ljud för att undvika problem
+            setTimeout(() => {
+                audioContext.close();
+            }, (duration * 1000) + 100);
+        } catch (e) {
+            console.log('Audio error:', e);
+        }
     }
 
     function updateDisplay() {
